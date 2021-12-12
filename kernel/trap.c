@@ -81,8 +81,10 @@ usertrap(void)
   {
       if (p->burst_len){
           p->timeslice--;
-          if (p->timeslice == 0)
+          if (p->timeslice == 0){
+              printf("usertrap(): yield %s\n", p->name);
               yield();
+          }
       }
   }
 
@@ -160,8 +162,10 @@ kerneltrap()
   {
       if (myproc()->burst_len){
           myproc()->timeslice--;
-          if (myproc()->timeslice == 0)
+          if (myproc()->timeslice == 0){
+              printf("kerneltrap(): yield %s\n", myproc()->name);
               yield();
+          }
       }
   }
 

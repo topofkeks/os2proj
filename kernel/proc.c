@@ -13,7 +13,7 @@ struct proc proc[NPROC];
 
 struct proc *initproc;
 
-uint64 default_timeslice = 100;
+uint64 default_timeslice = 5;
 
 int nextpid = 1;
 struct spinlock pid_lock;
@@ -313,7 +313,7 @@ fork(void)
   pid = np->pid;
 
   // Scheduler
-  np->timeslice = np->burst_len = p->burst_len;
+  np->timeslice = np->burst_len = p->timeslice;
 
   release(&np->lock);
 
@@ -457,6 +457,8 @@ scheduler(void)
     intr_on();
 
     p = get();
+    if (!p) continue;
+
     acquire(&p->lock);
     if(p->state == RUNNABLE) {
       // Switch to chosen process.  It is the process's job
@@ -464,14 +466,16 @@ scheduler(void)
       // before jumping back to us.
       p->state = RUNNING;
       c->proc = p;
+      printf("switch: \t%s pid \t%d timeslice:\t%d\n",p->name, p->pid, p->timeslice);
       swtch(&c->context, &p->context);
 
       // Process is done running for now.
       // It should have changed its p->state before coming back.
       c->proc = 0;
+
     }
     release(&p->lock);
-    put(p);
+
   }
 }
 
@@ -509,6 +513,7 @@ yield(void)
   struct proc *p = myproc();
   acquire(&p->lock);
   p->state = RUNNABLE;
+  put(p);
   sched();
   release(&p->lock);
 }
@@ -554,7 +559,7 @@ sleep(void *chan, struct spinlock *lk)
   // Go to sleep.
   p->chan = chan;
   p->state = SLEEPING;
-
+  //printf("sleeping \t%s pid \t%d timeslice \t%d\n",p->name,p->pid,p->timeslice);
   sched();
 
   // Tidy up.
@@ -577,6 +582,7 @@ wakeup(void *chan)
       acquire(&p->lock);
       if(p->state == SLEEPING && p->chan == chan) {
         p->state = RUNNABLE;
+        put(p);
       }
       release(&p->lock);
     }
@@ -598,6 +604,7 @@ kill(int pid)
       if(p->state == SLEEPING){
         // Wake process from sleep().
         p->state = RUNNABLE;
+        put(p);
       }
       release(&p->lock);
       return 0;
