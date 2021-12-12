@@ -13,7 +13,7 @@ struct proc proc[NPROC];
 
 struct proc *initproc;
 
-uint64 default_timeslice = 5;
+uint64 default_timeslice = 20;
 
 int nextpid = 1;
 struct spinlock pid_lock;
@@ -313,7 +313,7 @@ fork(void)
   pid = np->pid;
 
   // Scheduler
-  np->timeslice = np->burst_len = p->timeslice;
+  np->timeslice = np->burst_len = p->burst_len;
 
   release(&np->lock);
 
