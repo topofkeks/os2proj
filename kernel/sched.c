@@ -1,28 +1,33 @@
 //
 // Created by aleksa on 12/11/21.
 //
+
 #include "types.h"
 #include "riscv.h"
 #include "param.h"
 #include "defs.h"
-#include "sjf.h"
-#include "cfs.h"
+#include "spinlock.h"
+#include "proc.h"
 #include "sched.h"
+
+struct proc *fifo[NPROC];
+uint64 head = 0, tail = 0;
 
 struct proc*
 get()
 {
-    return sjf_get();
+    if (head == tail) return 0;
+    struct proc *ret = fifo[head++];
+    if (head == NPROC) head = 0;
+
+    return ret;
 }
 
 void
 put(struct proc *p)
 {
-    sjf_put(p);
-}
+    if (!p) return;
 
-void
-init(void)
-{
-    sjf_init();
+    fifo[tail++] = p;
+    if (tail == NPROC) tail = 0;
 }

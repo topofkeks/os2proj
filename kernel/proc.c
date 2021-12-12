@@ -5,12 +5,15 @@
 #include "spinlock.h"
 #include "proc.h"
 #include "defs.h"
+#include "sched.h"
 
 struct cpu cpus[NCPU];
 
 struct proc proc[NPROC];
 
 struct proc *initproc;
+
+uint64 default_timeslice = 100;
 
 int nextpid = 1;
 struct spinlock pid_lock;
@@ -242,7 +245,11 @@ userinit(void)
   safestrcpy(p->name, "initcode", sizeof(p->name));
   p->cwd = namei("/");
 
+  p->timeslice = p->burst_len = default_timeslice;
   p->state = RUNNABLE;
+
+  // Insert into scheduler
+  put(p);
 
   release(&p->lock);
 }
@@ -305,6 +312,9 @@ fork(void)
 
   pid = np->pid;
 
+  // Scheduler
+  np->timeslice = np->burst_len = p->burst_len;
+
   release(&np->lock);
 
   acquire(&wait_lock);
@@ -313,6 +323,7 @@ fork(void)
 
   acquire(&np->lock);
   np->state = RUNNABLE;
+  put(np);
   release(&np->lock);
 
   return pid;
@@ -445,22 +456,22 @@ scheduler(void)
     // Avoid deadlock by ensuring that devices can interrupt.
     intr_on();
 
-    for(p = proc; p < &proc[NPROC]; p++) {
-      acquire(&p->lock);
-      if(p->state == RUNNABLE) {
-        // Switch to chosen process.  It is the process's job
-        // to release its lock and then reacquire it
-        // before jumping back to us.
-        p->state = RUNNING;
-        c->proc = p;
-        swtch(&c->context, &p->context);
+    p = get();
+    acquire(&p->lock);
+    if(p->state == RUNNABLE) {
+      // Switch to chosen process.  It is the process's job
+      // to release its lock and then reacquire it
+      // before jumping back to us.
+      p->state = RUNNING;
+      c->proc = p;
+      swtch(&c->context, &p->context);
 
-        // Process is done running for now.
-        // It should have changed its p->state before coming back.
-        c->proc = 0;
-      }
-      release(&p->lock);
+      // Process is done running for now.
+      // It should have changed its p->state before coming back.
+      c->proc = 0;
     }
+    release(&p->lock);
+    put(p);
   }
 }
 
