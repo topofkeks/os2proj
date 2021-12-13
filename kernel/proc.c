@@ -466,7 +466,11 @@ scheduler(void)
       // before jumping back to us.
       p->state = RUNNING;
       c->proc = p;
+      if (p->burst_len && !p->timeslice)
+        p->timeslice = p->burst_len;
+
       printf("switch: \t%s pid \t%d timeslice:\t%d\n",p->name, p->pid, p->timeslice);
+
       swtch(&c->context, &p->context);
 
       // Process is done running for now.

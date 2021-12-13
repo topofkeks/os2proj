@@ -20,8 +20,7 @@ get()
     struct proc *ret = fifo[head++];
     if (head == NPROC) head = 0;
 
-    if (ret->burst_len && !ret->timeslice)
-        ret->timeslice = ret->burst_len;
+
     return ret;
 }
 
