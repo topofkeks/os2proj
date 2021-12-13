@@ -107,6 +107,12 @@ struct proc {
   char name[16];               // Process name (debugging)
 
   // Scheduling related fields
+  uint64 timeslice_left;
   uint64 timeslice;
-  uint64 burst_len;
+
+  // SJF
+  uint64 burst_length;
+  uint64 tau;
+
 };
+

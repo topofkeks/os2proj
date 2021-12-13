@@ -13,6 +13,7 @@ struct proc proc[NPROC];
 
 struct proc *initproc;
 
+enum scheduling_alg { SCHED_SJF, SCHED_CFS } sched_alg;
 uint64 default_timeslice = 20;
 
 int nextpid = 1;
@@ -245,7 +246,7 @@ userinit(void)
   safestrcpy(p->name, "initcode", sizeof(p->name));
   p->cwd = namei("/");
 
-  p->timeslice = p->burst_len = default_timeslice;
+    p->timeslice_left = p->timeslice = default_timeslice;
   p->state = RUNNABLE;
 
   // Insert into scheduler
@@ -313,7 +314,7 @@ fork(void)
   pid = np->pid;
 
   // Scheduler
-  np->timeslice = np->burst_len = p->burst_len;
+  np->timeslice_left = np->timeslice = p->timeslice;
 
   release(&np->lock);
 
@@ -466,10 +467,10 @@ scheduler(void)
       // before jumping back to us.
       p->state = RUNNING;
       c->proc = p;
-      if (p->burst_len && !p->timeslice)
-        p->timeslice = p->burst_len;
+      if (p->timeslice && !p->timeslice_left)
+        p->timeslice_left = p->timeslice;
 
-      printf("switch: \t%s pid \t%d timeslice:\t%d\n",p->name, p->pid, p->timeslice);
+      printf("switch: \t%s pid \t%d timeslice_left:\t%d\n",p->name, p->pid, p->timeslice_left);
 
       swtch(&c->context, &p->context);
 
@@ -563,7 +564,8 @@ sleep(void *chan, struct spinlock *lk)
   // Go to sleep.
   p->chan = chan;
   p->state = SLEEPING;
-  //printf("sleeping \t%s pid \t%d timeslice \t%d\n",p->name,p->pid,p->timeslice);
+
+  //printf("sleeping \t%s pid \t%d timeslice_left \t%d\n",p->name,p->pid,p->timeslice_left);
   sched();
 
   // Tidy up.

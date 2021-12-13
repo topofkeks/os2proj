@@ -9,26 +9,24 @@
 #include "spinlock.h"
 #include "proc.h"
 #include "sched.h"
+#include "sjf.h"
 
-struct proc *fifo[NPROC];
-uint64 head = 0, tail = 0;
+struct spinlock schedlock;
 
 struct proc*
 get()
 {
-    if (head == tail) return 0;
-    struct proc *ret = fifo[head++];
-    if (head == NPROC) head = 0;
-
-
+    acquire(&schedlock);
+    struct proc *ret = sjf_get();
+    release(&schedlock);
     return ret;
 }
 
 void
 put(struct proc *p)
 {
-    if (!p) return;
-
-    fifo[tail++] = p;
-    if (tail == NPROC) tail = 0;
+    if (!p) panic("sched: put null");
+    acquire(&schedlock);
+    sjf_put(p);
+    release(&schedlock);
 }

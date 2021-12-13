@@ -76,12 +76,13 @@ usertrap(void)
   if(p->killed)
     exit(-1);
 
-  // give up the CPU if this is a timer interrupt.
-  if(which_dev == 2)
+  // give up the CPU if timeslice_left is 0.
+  if(which_dev == 2) // Timer
   {
-      if (p->burst_len){
-          p->timeslice--;
-          if (p->timeslice == 0){
+      p->burst_length++;
+      if (p->timeslice){
+          p->timeslice_left--;
+          if (p->timeslice_left == 0){
               printf("usertrap(): yield %s\n", p->name);
               yield();
           }
@@ -160,9 +161,10 @@ kerneltrap()
   // give up the CPU if this is a timer interrupt.
   if(which_dev == 2 && myproc() != 0 && myproc()->state == RUNNING)
   {
-      if (myproc()->burst_len){
-          myproc()->timeslice--;
-          if (myproc()->timeslice == 0){
+      myproc()->burst_length++;
+      if (myproc()->timeslice){
+          myproc()->timeslice_left--;
+          if (myproc()->timeslice_left == 0){
               printf("kerneltrap(): yield %s\n", myproc()->name);
               yield();
           }
