@@ -26,6 +26,8 @@ void
 put(struct proc *p)
 {
     if (!p) panic("sched: put null");
+    if (p->state != RUNNABLE) panic("put non runnable");
+
     acquire(&schedlock);
     sjf_put(p);
     release(&schedlock);

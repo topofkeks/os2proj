@@ -105,9 +105,16 @@ int             either_copyout(int user_dst, uint64 dst, void *src, uint64 len);
 int             either_copyin(void *dst, int user_src, uint64 src, uint64 len);
 void            procdump(void);
 
+// heap.c
+void            heap_push(struct proc*);
+struct proc *   heap_pop();
+void            heap_change_comp(uint8(*comparison)(struct proc*, struct proc*));
+
 // sjf.c
 struct proc*    sjf_get(void);
-void            sjf_put(struct proc*);
+void            sjf_put(struct proc* p);
+uint64          sjf_calc_tau(uint64 burst_len, uint64 old_tau);
+uint8           sjf_proc_lt(struct proc*, struct proc*);
 
 // sched.c
 struct proc*    get(void);

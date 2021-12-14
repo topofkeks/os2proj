@@ -13,7 +13,6 @@ struct proc proc[NPROC];
 
 struct proc *initproc;
 
-enum scheduling_alg { SCHED_SJF, SCHED_CFS } sched_alg;
 uint64 default_timeslice = 20;
 
 int nextpid = 1;
@@ -451,7 +450,8 @@ scheduler(void)
 {
   struct proc *p;
   struct cpu *c = mycpu();
-  
+  heap_change_comp(sjf_proc_lt);
+
   c->proc = 0;
   for(;;){
     // Avoid deadlock by ensuring that devices can interrupt.
@@ -470,7 +470,7 @@ scheduler(void)
       if (p->timeslice && !p->timeslice_left)
         p->timeslice_left = p->timeslice;
 
-      printf("switch: \t%s pid \t%d timeslice_left:\t%d\n",p->name, p->pid, p->timeslice_left);
+      //printf("switch: \t%s pid \t%d timeslice_left:\t%d\n",p->name, p->pid, p->timeslice_left);
 
       swtch(&c->context, &p->context);
 
@@ -565,7 +565,10 @@ sleep(void *chan, struct spinlock *lk)
   p->chan = chan;
   p->state = SLEEPING;
 
-  //printf("sleeping \t%s pid \t%d timeslice_left \t%d\n",p->name,p->pid,p->timeslice_left);
+  // SJF tau calculation
+  p->tau = sjf_calc_tau(p->burst_length, p->tau);
+  p->burst_length = 0;
+
   sched();
 
   // Tidy up.
