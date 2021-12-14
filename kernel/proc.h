@@ -114,5 +114,8 @@ struct proc {
   uint64 burst_length;
   uint64 tau;
 
+  // CFS
+  uint64 last_put;
+
 };
 

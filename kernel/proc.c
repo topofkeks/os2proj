@@ -450,7 +450,7 @@ scheduler(void)
 {
   struct proc *p;
   struct cpu *c = mycpu();
-  heap_change_comp(sjf_proc_lt);
+  heap_change_comp(cfs_proc_lt);
 
   c->proc = 0;
   for(;;){

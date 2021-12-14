@@ -11,7 +11,7 @@
 
 uint32 heapsize = 0;
 struct proc *heap[NPROC];
-uint8(*comp)(struct proc*, struct proc*) = sjf_proc_lt;
+uint8(*comp)(struct proc*, struct proc*) = cfs_proc_lt;
 
 void
 min_heapify(uint32 i)

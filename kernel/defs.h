@@ -116,6 +116,11 @@ void            sjf_put(struct proc* p);
 uint64          sjf_calc_tau(uint64 burst_len, uint64 old_tau);
 uint8           sjf_proc_lt(struct proc*, struct proc*);
 
+// cfs.c
+struct proc*    cfs_get(void);
+void            cfs_put(struct proc *p);
+uint8           cfs_proc_lt(struct proc*, struct proc*);
+
 // sched.c
 struct proc*    get(void);
 void            put(struct proc *);
