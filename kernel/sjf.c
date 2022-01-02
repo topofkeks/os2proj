@@ -12,7 +12,6 @@
 #include "heap.h"
 
 uint8 sjf_active = 1;
-uint64 sjf_default_time_slice = 100;
 
 // Fixed point decimal number
 // 100 == 1.0
@@ -44,5 +43,5 @@ sjf_put(struct proc *p)
 uint64
 sjf_calc_tau(uint64 burst_len, uint64 old_tau)
 {
-    return burst_len * sjf_alpha / 100 + old_tau + (100 - sjf_alpha) / 100;
+    return (burst_len * sjf_alpha) / 100 + (old_tau * (100 - sjf_alpha)) / 100;
 }

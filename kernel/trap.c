@@ -80,10 +80,11 @@ usertrap(void)
   if(which_dev == 2) // Timer
   {
       p->burst_length++;
+      p->tau = sjf_calc_tau(p->burst_length, p->tau);
       if (p->timeslice){
           p->timeslice_left--;
           if (p->timeslice_left == 0){
-              //printf("usertrap(): yield %s burst %d\n", p->name, p->burst_length);
+              printf("usertrap(): yield %d burst %d\n", p->pid, p->burst_length);
               yield();
           }
       }
@@ -162,10 +163,11 @@ kerneltrap()
   if(which_dev == 2 && myproc() != 0 && myproc()->state == RUNNING)
   {
       myproc()->burst_length++;
+      myproc()->tau = sjf_calc_tau(myproc()->burst_length, myproc()->tau);
       if (myproc()->timeslice){
           myproc()->timeslice_left--;
           if (myproc()->timeslice_left == 0){
-              //printf("kerneltrap(): yield %s burst %d\n", myproc()->name, myproc()->burst_length);
+              printf("kerneltrap(): yield %s burst %d\n", myproc()->name, myproc()->burst_length);
               yield();
           }
       }
