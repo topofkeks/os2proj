@@ -11,7 +11,7 @@
 #include "sjf.h"
 #include "heap.h"
 
-uint8 sjf_active = 1;
+uint8 sjf_active = 0;
 
 // Fixed point decimal number
 // 100 == 1.0
@@ -21,6 +21,7 @@ uint64 sjf_alpha = 50;
 uint8
 sjf_proc_lt(struct proc *a, struct proc *b)
 {
+    if (!sjf_active) panic("sjf inactive");
     if (a->tau < b->tau) return 1;
     return 0;
 }

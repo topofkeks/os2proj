@@ -17,7 +17,7 @@ struct proc*
 get()
 {
     acquire(&schedlock);
-    struct proc *ret = sjf_get();
+    struct proc *ret = cfs_get();
     release(&schedlock);
     return ret;
 }
@@ -29,6 +29,6 @@ put(struct proc *p)
     if (p->state != RUNNABLE) panic("put non runnable");
 
     acquire(&schedlock);
-    sjf_put(p);
+    cfs_put(p);
     release(&schedlock);
 }

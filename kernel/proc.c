@@ -13,7 +13,7 @@ struct proc proc[NPROC];
 
 struct proc *initproc;
 
-uint64 default_timeslice = 20;
+uint64 default_timeslice = 3;
 
 int nextpid = 1;
 struct spinlock pid_lock;
@@ -245,7 +245,9 @@ userinit(void)
   safestrcpy(p->name, "initcode", sizeof(p->name));
   p->cwd = namei("/");
 
-    p->timeslice_left = p->timeslice = default_timeslice;
+  p->timeslice_left = p->timeslice = default_timeslice;
+  p->last_put = p->burst_length = 0;
+
   p->state = RUNNABLE;
 
   // Insert into scheduler
@@ -314,6 +316,8 @@ fork(void)
 
   // Scheduler
   np->timeslice_left = np->timeslice = p->timeslice;
+  np->last_put = p->last_put;
+  np->burst_length = 0;
 
   release(&np->lock);
 
@@ -385,6 +389,8 @@ exit(int status)
   release(&wait_lock);
 
   // Jump into the scheduler, never to return.
+  //printf("exited with lastput %d\n", p->last_put);
+
   sched();
   panic("zombie exit");
 }
@@ -470,7 +476,7 @@ scheduler(void)
       if (p->timeslice && !p->timeslice_left)
         p->timeslice_left = p->timeslice;
 
-      //printf("switch: \t%s pid \t%d timeslice_left:\t%d\n",p->name, p->pid, p->timeslice_left);
+      //printf("switch: \t%d %s ts: %d \n",p->pid, p->name, p->timeslice);
 
       swtch(&c->context, &p->context);
 
@@ -519,6 +525,7 @@ yield(void)
   acquire(&p->lock);
   p->state = RUNNABLE;
   put(p);
+
   sched();
   release(&p->lock);
 }
@@ -567,6 +574,7 @@ sleep(void *chan, struct spinlock *lk)
 
   // SJF tau calculation
   p->tau = sjf_calc_tau(p->burst_length, p->tau);
+  //printf("%d tau: %d bl: %d\n",p->pid, p->tau, p->burst_length);
   p->burst_length = 0;
 
   sched();
