@@ -11,12 +11,25 @@
 #include "sjf.h"
 #include "heap.h"
 
-uint8 sjf_active = 0;
+uint8 sjf_active = 1;
 
 // Fixed point decimal number
 // 100 == 1.0
 // 50 == 0.5
 uint64 sjf_alpha = 50;
+
+void
+sjf_set(uint8 status)
+{
+  sjf_active = status;
+}
+
+void
+sjf_setalpha(uint64 alpha)
+{
+  sjf_alpha = alpha;
+}
+
 
 uint8
 sjf_proc_lt(struct proc *a, struct proc *b)

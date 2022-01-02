@@ -18,34 +18,35 @@ int random() {
 }
 
 int do_work(int length) {
-    int ret = 0;
-    for (int i = 0; i < length; i++) {
-        for (int j = 0; j < length; j++) {
-            ret += (j % 2) ? +1 : -1;
-        }
+  int ret = 0;
+  for (int i = 0; i < length; i++) {
+    for (int j = 0; j < length; j++) {
+      ret += (j % 2) ? +1 : -1;
     }
-    return ret;
+  }
+  return ret;
 }
 
 void p1(int id, int length) {
-    for (int i = 0; i < length; i++) {
-        sleep(1);
+  for (int i = 0; i < length; i++) {
+    sleep(1);
 
-        do_work(length);
-        printf("P%d iteration=%d\n", id, i);
-    }
-    printf("P%d FINISHED!\n", id);
+    do_work(length * 10);
+    //printf("P%d iteration=%d\n", id, i);
+  }
+  printf("P%d FINISHED!\n", id);
 }
 
 void p2(int id, int length) {
-    for (int i = 0; i < length; i++) {
-        sleep(random());
+  for (int i = 0; i < length; i++) {
+    sleep(random());
 
-        do_work(length / 10);
-        printf("P%d iteration=%d\n", id, i);
-    }
-    printf("P%d FINISHED!\n", id);
+    do_work(length / 10);
+    //printf("P%d iteration=%d\n", id, i);
+  }
+  printf("P%d FINISHED!\n", id);
 }
+
 
 int
 main(int argc, char *argv[])
@@ -65,6 +66,7 @@ main(int argc, char *argv[])
                 break;
         }
     }
+    sched(1, 1, 1);
 
     printf("proc_num=%d length=%d\n", proc_num, length);
 

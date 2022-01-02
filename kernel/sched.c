@@ -12,12 +12,23 @@
 #include "sjf.h"
 
 struct spinlock schedlock;
+struct proc *(*getter)(void) = sjf_get;
+void(*putter)(struct proc *) = sjf_put;
+
+
+void
+set_sched(struct proc *(*get)(void), void(*put)(struct proc *))
+{
+  getter = get;
+  putter = put;
+
+}
 
 struct proc*
 get()
 {
     acquire(&schedlock);
-    struct proc *ret = cfs_get();
+    struct proc *ret = (*getter)();
     release(&schedlock);
     return ret;
 }
@@ -29,6 +40,6 @@ put(struct proc *p)
     if (p->state != RUNNABLE) panic("put non runnable");
 
     acquire(&schedlock);
-    cfs_put(p);
+    (*putter)(p);
     release(&schedlock);
 }

@@ -63,4 +63,7 @@ void
 heap_change_comp(uint8(*comparison)(struct proc*, struct proc*))
 {
     comp = comparison;
+    if (heapsize < 2) return;
+    for (uint64 i = heapsize / 2; i >= 0; i--)
+      min_heapify(i);
 }

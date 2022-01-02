@@ -456,7 +456,8 @@ scheduler(void)
 {
   struct proc *p;
   struct cpu *c = mycpu();
-  heap_change_comp(cfs_proc_lt);
+  initlock(&schedlock, "schedlock");
+  heap_change_comp(sjf_proc_lt);
 
   c->proc = 0;
   for(;;){
@@ -687,5 +688,20 @@ procdump(void)
       state = "???";
     printf("%d %s %s", p->pid, state, p->name);
     printf("\n");
+  }
+}
+
+void
+set_timeslice(uint64 timeslice)
+{
+  default_timeslice = timeslice;
+  struct proc *p;
+
+  for(p = proc; p < &proc[NPROC]; p++){
+    if (p->state != UNUSED || p->state != ZOMBIE){
+      acquire(&p->lock);
+      p->timeslice = default_timeslice;
+      release(&p->lock);
+    }
   }
 }

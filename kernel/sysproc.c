@@ -99,5 +99,29 @@ sys_uptime(void)
 uint64
 sys_sched(void)
 {
-    return 0;
+  int sched, timeslice, alpha;
+  argint(0, &sched);
+  argint(1, &timeslice);
+  argint(2, &alpha);
+  if (alpha > 100) alpha = 100;
+  acquire(&schedlock);
+  switch (sched){
+    case 0:
+      sjf_set(1);
+      cfs_set(0);
+      set_sched(sjf_get, sjf_put);
+      sjf_setalpha(alpha);
+      set_timeslice(timeslice);
+      heap_change_comp(sjf_proc_lt);
+      break;
+    case 1:
+      cfs_set(1);
+      sjf_set(0);
+      set_sched(cfs_get, cfs_put);
+      heap_change_comp(cfs_proc_lt);
+      break;
+    default: panic("invalid scheduler");
+  }
+  release(&schedlock);
+  return 0;
 }

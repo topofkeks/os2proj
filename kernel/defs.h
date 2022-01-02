@@ -104,6 +104,7 @@ void            yield(void);
 int             either_copyout(int user_dst, uint64 dst, void *src, uint64 len);
 int             either_copyin(void *dst, int user_src, uint64 src, uint64 len);
 void            procdump(void);
+void            set_timeslice(uint64);
 
 // heap.c
 void            heap_push(struct proc*);
@@ -115,15 +116,20 @@ struct proc*    sjf_get(void);
 void            sjf_put(struct proc* p);
 uint64          sjf_calc_tau(uint64 burst_len, uint64 old_tau);
 uint8           sjf_proc_lt(struct proc*, struct proc*);
+void            sjf_setalpha(uint64);
+void            sjf_set(uint8);
 
 // cfs.c
 struct proc*    cfs_get(void);
 void            cfs_put(struct proc *p);
 uint8           cfs_proc_lt(struct proc*, struct proc*);
+void            cfs_set(uint8);
 
 // sched.c
 struct proc*    get(void);
 void            put(struct proc *);
+void            set_sched(struct proc *(*)(void), void(*)(struct proc *));
+extern struct spinlock schedlock;
 
 // swtch.S
 void            swtch(struct context*, struct context*);
