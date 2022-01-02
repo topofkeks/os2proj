@@ -247,8 +247,9 @@ userinit(void)
 
   p->timeslice_left = p->timeslice = default_timeslice;
   p->last_put = p->burst_length = 0;
-
   p->state = RUNNABLE;
+
+  initlock(&schedlock, "schedlock");
 
   // Insert into scheduler
   put(p);
@@ -457,7 +458,7 @@ scheduler(void)
   struct proc *p;
   struct cpu *c = mycpu();
 
-  initlock(&schedlock, "schedlock");
+
   heap_change_comp(sjf_proc_lt);
 
   c->proc = 0;

@@ -61,7 +61,7 @@ OBJCOPY = $(TOOLPREFIX)objcopy
 OBJDUMP = $(TOOLPREFIX)objdump
 
 ifndef CPUS
-CPUS := 1
+CPUS := 8
 endif
 
 CFLAGS = -Wall -Werror -O0 -fno-omit-frame-pointer -ggdb
