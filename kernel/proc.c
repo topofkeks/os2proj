@@ -456,6 +456,7 @@ scheduler(void)
 {
   struct proc *p;
   struct cpu *c = mycpu();
+
   initlock(&schedlock, "schedlock");
   heap_change_comp(sjf_proc_lt);
 

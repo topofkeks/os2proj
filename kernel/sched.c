@@ -21,7 +21,6 @@ set_sched(struct proc *(*get)(void), void(*put)(struct proc *))
 {
   getter = get;
   putter = put;
-
 }
 
 struct proc*

@@ -104,6 +104,7 @@ sys_sched(void)
   argint(1, &timeslice);
   argint(2, &alpha);
   if (alpha > 100) alpha = 100;
+
   acquire(&schedlock);
   switch (sched){
     case 0:
@@ -115,8 +116,8 @@ sys_sched(void)
       heap_change_comp(sjf_proc_lt);
       break;
     case 1:
-      cfs_set(1);
       sjf_set(0);
+      cfs_set(1);
       set_sched(cfs_get, cfs_put);
       heap_change_comp(cfs_proc_lt);
       break;

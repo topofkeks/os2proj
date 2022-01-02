@@ -32,7 +32,7 @@ void p1(int id, int length) {
     sleep(1);
 
     do_work(length * 10);
-    //printf("P%d iteration=%d\n", id, i);
+    printf("P%d iteration=%d\n", id, i);
   }
   printf("P%d FINISHED!\n", id);
 }
@@ -42,7 +42,7 @@ void p2(int id, int length) {
     sleep(random());
 
     do_work(length / 10);
-    //printf("P%d iteration=%d\n", id, i);
+    printf("P%d iteration=%d\n", id, i);
   }
   printf("P%d FINISHED!\n", id);
 }
@@ -66,7 +66,6 @@ main(int argc, char *argv[])
                 break;
         }
     }
-    sched(1, 1, 1);
 
     printf("proc_num=%d length=%d\n", proc_num, length);
 
