@@ -31,7 +31,7 @@ void p1(int id, int length) {
   for (int i = 0; i < length; i++) {
     sleep(1);
 
-    do_work(length * 10);
+    do_work(length);
     printf("P%d iteration=%d\n", id, i);
   }
   printf("P%d FINISHED!\n", id);
@@ -52,6 +52,7 @@ int
 main(int argc, char *argv[])
 {
     int proc_num = 8;
+    int res = uptime();
     int length = 500;
 
     for (int i = 1; i < argc; i++) {
@@ -87,6 +88,7 @@ main(int argc, char *argv[])
         wait(0);
     }
 
+    printf("perf: %d", uptime() - res);
     exit(0);
 }
 

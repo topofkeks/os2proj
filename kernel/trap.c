@@ -80,7 +80,7 @@ usertrap(void)
   if(which_dev == 2) // Timer
   {
       p->burst_length++;
-      p->tau = sjf_calc_tau(p->burst_length, p->tau);
+      //p->tau = sjf_calc_tau(p->burst_length, p->tau);
       if (p->timeslice){
           p->timeslice_left--;
           if (p->timeslice_left == 0){
@@ -163,7 +163,7 @@ kerneltrap()
   if(which_dev == 2 && myproc() != 0 && myproc()->state == RUNNING)
   {
       myproc()->burst_length++;
-      myproc()->tau = sjf_calc_tau(myproc()->burst_length, myproc()->tau);
+      //myproc()->tau = sjf_calc_tau(myproc()->burst_length, myproc()->tau);
       if (myproc()->timeslice){
           myproc()->timeslice_left--;
           if (myproc()->timeslice_left == 0){

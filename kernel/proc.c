@@ -13,7 +13,7 @@ struct proc proc[NPROC];
 
 struct proc *initproc;
 
-uint64 default_timeslice = 3;
+uint64 default_timeslice = 1;
 
 int nextpid = 1;
 struct spinlock pid_lock;
