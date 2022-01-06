@@ -9,7 +9,7 @@
 #include "spinlock.h"
 #include "proc.h"
 #include "sched.h"
-#include "sjf.h"
+
 
 struct spinlock schedlock;
 struct proc *(*getter)(void) = sjf_get;

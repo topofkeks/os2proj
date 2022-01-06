@@ -8,8 +8,7 @@
 #include "defs.h"
 #include "spinlock.h"
 #include "proc.h"
-#include "sjf.h"
-#include "heap.h"
+
 
 uint8 sjf_active = 1;
 

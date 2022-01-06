@@ -8,7 +8,6 @@
 #include "defs.h"
 #include "spinlock.h"
 #include "proc.h"
-#include "heap.h"
 
 uint8 cfs_active = 1;
 
