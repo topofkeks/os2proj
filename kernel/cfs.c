@@ -25,7 +25,7 @@ cfs_get(void)
     struct proc *ret = heap_pop();
     if (!ret) return ret;
 
-    ret->timeslice = (ticks - ret->last_put) / NCPU;
+    ret->timeslice = (ticks - ret->last_put) / (heapsize + 1);
     if (ret->timeslice == 0) ret->timeslice = 1;
     return ret;
 }

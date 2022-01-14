@@ -107,6 +107,7 @@ void            procdump(void);
 void            set_timeslice(uint64);
 
 // heap.c
+extern uint32 heapsize;
 void            heap_push(struct proc*);
 struct proc *   heap_pop();
 void            heap_change_comp(uint8(*comparison)(struct proc*, struct proc*));

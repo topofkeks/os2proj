@@ -38,7 +38,6 @@ heap_push(struct proc* p)
     heapsize++;
     heap[heapsize - 1] = p;
 
-
     uint32 i = heapsize - 1;
     while (i > 0 && comp(heap[i], heap[i/2])) {
         struct proc *t = heap[i];

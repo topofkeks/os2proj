@@ -319,6 +319,7 @@ fork(void)
   np->timeslice_left = np->timeslice = p->timeslice;
   np->last_put = p->last_put;
   np->burst_length = 0;
+  np->tau = p->tau;
 
   release(&np->lock);
 
@@ -470,7 +471,7 @@ scheduler(void)
     if (!p) continue;
 
     acquire(&p->lock);
-    if(p->state == RUNNABLE) {
+    //if(p->state == RUNNABLE) {
       // Switch to chosen process.  It is the process's job
       // to release its lock and then reacquire it
       // before jumping back to us.
@@ -487,7 +488,7 @@ scheduler(void)
       // It should have changed its p->state before coming back.
       c->proc = 0;
 
-    }
+    //}
     release(&p->lock);
 
   }
